@@ -45,7 +45,7 @@ const seedProducts = async () => {
       await User.create({
         name: 'Admin User',
         email: 'admin@example.com',
-        password: '123456',
+        password: '12345678',
         isAdmin: true
       });
     } else if (!existingAdmin.isAdmin) {
@@ -58,7 +58,7 @@ const seedProducts = async () => {
       await User.create({
         name: '演示用户',
         email: 'demo@yuegou.com',
-        password: '123456',
+        password: '12345678',
         isAdmin: false
       });
     } else if (demoUser.isAdmin) {
@@ -69,8 +69,8 @@ const seedProducts = async () => {
     const count = await Product.countDocuments();
     const categories = await Product.distinct('category');
     console.log(`Catalog ready with ${count} products across ${categories.length} categories`);
-    console.log('Admin account: admin@example.com / 123456');
-    console.log('Demo account: demo@yuegou.com / 123456');
+    console.log('Admin account: admin@example.com / 12345678');
+    console.log('Demo account: demo@yuegou.com / 12345678');
     process.exit(0);
   } catch (error) {
     console.error('Failed to seed products:', error.message);

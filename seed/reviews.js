@@ -49,10 +49,10 @@ const seedReviews = async () => {
 
     // Get or create reviewer accounts
     const reviewerDefs = [
-      { name: '数码爱好者', email: 'reviewer1@yuegou.com', password: '123456' },
-      { name: '购物达人小王', email: 'reviewer2@yuegou.com', password: '123456' },
-      { name: '品质生活家', email: 'reviewer3@yuegou.com', password: '123456' },
-      { name: '实用主义买家', email: 'reviewer4@yuegou.com', password: '123456' }
+      { name: '数码爱好者', email: 'reviewer1@yuegou.com', password: '12345678' },
+      { name: '购物达人小王', email: 'reviewer2@yuegou.com', password: '12345678' },
+      { name: '品质生活家', email: 'reviewer3@yuegou.com', password: '12345678' },
+      { name: '实用主义买家', email: 'reviewer4@yuegou.com', password: '12345678' }
     ];
 
     const reviewers = [];
