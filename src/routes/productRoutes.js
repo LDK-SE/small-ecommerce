@@ -42,6 +42,12 @@ router.put(
   '/:id',
   protect,
   adminOnly,
+  validate({
+    name: [minLength(1, '商品名称至少 1 个字符。')],
+    description: [minLength(8, '商品描述至少 8 个字符。')],
+    price: [isDecimal(0, '价格必须是大于等于 0 的数字。')],
+    stock: [isInt(0, '库存必须是大于等于 0 的整数。')]
+  }),
   updateProduct
 );
 router.delete('/:id', protect, adminOnly, deleteProduct);

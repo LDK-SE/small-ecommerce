@@ -1,29 +1,40 @@
 const Order = require('../models/Order');
 const Product = require('../models/Product');
+const { sanitizeText } = require('../utils/sanitize');
 
 const createOrder = async (req, res, next) => {
   try {
-    const { items, shippingAddress } = req.body;
+    const { items } = req.body;
 
     if (!items || !Array.isArray(items) || items.length === 0) {
-      return res.status(400).json({ message: 'Order items are required' });
+      return res.status(400).json({ message: '订单商品为必填项。' });
     }
 
-    if (!shippingAddress?.receiverName || !shippingAddress?.phone || !shippingAddress?.address) {
-      return res.status(400).json({ message: 'Shipping name, phone, and address are required' });
+    if (
+      !req.body.shippingAddress?.receiverName ||
+      !req.body.shippingAddress?.phone ||
+      !req.body.shippingAddress?.address
+    ) {
+      return res.status(400).json({ message: '收货人、电话和地址均为必填项。' });
     }
+
+    const shippingAddress = {
+      receiverName: sanitizeText(req.body.shippingAddress.receiverName),
+      phone: sanitizeText(req.body.shippingAddress.phone),
+      address: sanitizeText(req.body.shippingAddress.address)
+    };
 
     const normalizedItems = [];
     let totalPrice = 0;
+    const decremented = [];
 
     for (const item of items) {
       const quantity = Number(item.quantity);
 
       if (!quantity || quantity < 1) {
-        return res.status(400).json({ message: 'Item quantity must be greater than 0' });
+        return res.status(400).json({ message: '商品数量必须大于 0。' });
       }
 
-      // Atomic stock decrement works with a normal local MongoDB instance.
       const product = await Product.findOneAndUpdate(
         {
           _id: item.productId,
@@ -38,8 +49,18 @@ const createOrder = async (req, res, next) => {
       );
 
       if (!product) {
-        return res.status(400).json({ message: `Product not found or insufficient stock: ${item.productId}` });
+        // Rollback all previously decremented stock
+        if (decremented.length > 0) {
+          await Promise.all(
+            decremented.map((p) =>
+              Product.findByIdAndUpdate(p.id, { $inc: { stock: p.qty } })
+            )
+          );
+        }
+        return res.status(400).json({ message: `商品未找到或库存不足：${item.productId}` });
       }
+
+      decremented.push({ id: product._id, qty: quantity });
 
       const orderItem = {
         productId: product._id,
@@ -70,7 +91,7 @@ const getUserOrders = async (req, res, next) => {
     const requestedUserId = req.params.userId;
 
     if (!req.user.isAdmin && req.user._id.toString() !== requestedUserId) {
-      return res.status(403).json({ message: 'You can only view your own orders' });
+      return res.status(403).json({ message: '您只能查看自己的订单。' });
     }
 
     const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
@@ -134,11 +155,11 @@ const getOrderById = async (req, res, next) => {
       .populate('items.productId', 'name imageUrl category');
 
     if (!order) {
-      return res.status(404).json({ message: 'Order not found' });
+      return res.status(404).json({ message: '订单未找到。' });
     }
 
     if (!req.user.isAdmin && order.userId._id.toString() !== req.user._id.toString()) {
-      return res.status(403).json({ message: 'You can only view your own order' });
+      return res.status(403).json({ message: '您只能查看自己的订单。' });
     }
 
     return res.json(order);
@@ -152,16 +173,16 @@ const updateOrderStatus = async (req, res, next) => {
     const { status, paymentStatus } = req.body;
 
     if (status && !['pending', 'completed', 'canceled'].includes(status)) {
-      return res.status(400).json({ message: 'Invalid order status' });
+      return res.status(400).json({ message: '无效的订单状态。' });
     }
 
     if (paymentStatus && !['unpaid', 'paid', 'refunded'].includes(paymentStatus)) {
-      return res.status(400).json({ message: 'Invalid payment status' });
+      return res.status(400).json({ message: '无效的支付状态。' });
     }
 
     const existingOrder = await Order.findById(req.params.id);
     if (!existingOrder) {
-      return res.status(404).json({ message: 'Order not found' });
+      return res.status(404).json({ message: '订单未找到。' });
     }
 
     const wasConsumed = existingOrder.status !== 'canceled' && existingOrder.paymentStatus !== 'refunded';
@@ -203,15 +224,19 @@ const payOrder = async (req, res, next) => {
     const order = await Order.findById(req.params.id);
 
     if (!order) {
-      return res.status(404).json({ message: 'Order not found' });
+      return res.status(404).json({ message: '订单未找到。' });
     }
 
     if (!req.user.isAdmin && order.userId.toString() !== req.user._id.toString()) {
-      return res.status(403).json({ message: 'You can only pay your own order' });
+      return res.status(403).json({ message: '您只能支付自己的订单。' });
     }
 
     if (order.paymentStatus === 'paid') {
-      return res.status(400).json({ message: 'Order is already paid' });
+      return res.status(400).json({ message: '订单已支付，无需重复支付。' });
+    }
+
+    if (order.status === 'canceled') {
+      return res.status(400).json({ message: '已取消的订单无法支付。' });
     }
 
     order.paymentStatus = 'paid';

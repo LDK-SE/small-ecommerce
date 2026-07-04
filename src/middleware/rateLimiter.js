@@ -17,12 +17,19 @@ const rateLimiter = ({ windowMs, max }) => (req, res, next) => {
 
   if (!current || current.resetAt <= now) {
     buckets.set(key, { count: 1, resetAt: now + windowMs });
+    res.setHeader('X-RateLimit-Limit', max);
+    res.setHeader('X-RateLimit-Remaining', max - 1);
     return next();
   }
 
   current.count += 1;
+  const remaining = Math.max(0, max - current.count);
+  res.setHeader('X-RateLimit-Limit', max);
+  res.setHeader('X-RateLimit-Remaining', remaining);
 
   if (current.count > max) {
+    const retryAfterSec = Math.ceil((current.resetAt - now) / 1000);
+    res.setHeader('Retry-After', retryAfterSec);
     return res.status(429).json({ message: '请求过于频繁，请稍后重试。' });
   }
 

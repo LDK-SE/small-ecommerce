@@ -198,3 +198,13 @@ img {
 .star-half {
   color: #f59e0b;
 }
+
+:root[data-theme="dark"] .star-half {
+  color: #fbbf24;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .star-half {
+    color: #fbbf24;
+  }
+}

@@ -58,4 +58,13 @@ const isArray = (message) => ({
   }
 });
 
-module.exports = { required, isEmail, minLength, isInt, isDecimal, isArray };
+const isPhone = (message) => ({
+  validator: (value) => {
+    if (value && !/^1[3-9]\d{9}$/.test(String(value).trim())) {
+      return message || '请输入有效的中国大陆手机号。';
+    }
+    return null;
+  }
+});
+
+module.exports = { required, isEmail, minLength, isInt, isDecimal, isArray, isPhone };

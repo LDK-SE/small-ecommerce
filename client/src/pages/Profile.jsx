@@ -17,6 +17,10 @@ export default function Profile() {
 
   const { user } = useAuth();
   const [name, setName] = useState(user?.name || '');
+
+  useEffect(() => {
+    if (user?.name) setName(user.name);
+  }, [user?.name]);
   const [addresses, setAddresses] = useState([]);
   const [profileMessage, setProfileMessage] = useState('');
   const [profileError, setProfileError] = useState('');
@@ -180,6 +184,9 @@ export default function Profile() {
         {addressMessage && <p className="mt-4 rounded-md bg-green-50 p-3 text-sm text-green-700 dark:bg-green-900/20 dark:text-green-400">{addressMessage}</p>}
         {addressError && <p className="mt-4 rounded-md bg-red-50 p-3 text-sm text-red-700 dark:bg-red-900/20 dark:text-red-400">{addressError}</p>}
         {addressesLoading && <p className="mt-5 text-sm text-body">正在加载地址...</p>}
+        {!addressesLoading && addresses.length === 0 && (
+          <p className="mt-5 text-sm text-body">还没有添加收货地址。</p>
+        )}
         <div className="mt-5 grid gap-3">
           {addresses.map((item) => (
             <div key={item._id} className="rounded-md border border-theme p-4">

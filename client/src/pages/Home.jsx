@@ -212,11 +212,19 @@ export default function Home() {
           className="mt-4 mx-auto flex max-w-md gap-2"
           onSubmit={(e) => {
             e.preventDefault();
+            const input = e.target.elements.email;
+            if (!input.value.trim() || !input.checkValidity()) {
+              toast.error('请输入有效的邮箱地址。');
+              return;
+            }
             toast.success('感谢订阅！');
+            input.value = '';
           }}
         >
           <input
+            name="email"
             type="email"
+            required
             placeholder="输入您的邮箱"
             className="flex-1 rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] px-4 py-2 text-sm outline-none focus:border-brand-600"
           />

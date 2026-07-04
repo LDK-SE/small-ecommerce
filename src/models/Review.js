@@ -22,15 +22,13 @@ const reviewSchema = new mongoose.Schema(
     comment: {
       type: String,
       required: true,
-      trim: true
+      trim: true,
+      maxlength: 2000
     },
-    createdAt: {
-      type: Date,
-      default: Date.now
-    }
   },
   {
-    versionKey: false
+    versionKey: false,
+    timestamps: true
   }
 );
 

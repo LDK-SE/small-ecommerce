@@ -103,7 +103,21 @@ export default function ProductDetails() {
   };
 
   if (loading) return <ProductDetailSkeleton />;
-  if (error && !product) return <p className="rounded-md bg-red-50 p-3 text-sm text-red-700 dark:bg-red-900/20 dark:text-red-400">{error}</p>;
+  if (error && !product) return (
+    <div className="surface-card p-6 space-y-4">
+      <Link to="/products" className="text-sm font-semibold text-brand-700 hover:text-brand-600">
+        返回商品列表
+      </Link>
+      <p className="rounded-md bg-red-50 p-3 text-sm text-red-700 dark:bg-red-900/20 dark:text-red-400">{error}</p>
+      <button
+        type="button"
+        onClick={loadProduct}
+        className="rounded-md bg-brand-600 px-4 py-2 text-sm font-medium text-white"
+      >
+        重试
+      </button>
+    </div>
+  );
 
   return (
     <div className="space-y-6">

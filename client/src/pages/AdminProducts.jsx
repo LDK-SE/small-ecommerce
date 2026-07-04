@@ -4,6 +4,7 @@ import { toast } from '../components/Toast.tsx';
 import { api } from '../services/api.js';
 import { formatPrice } from '../utils/formatPrice.js';
 import usePageMeta from '../hooks/usePageMeta.js';
+import { ProductGridSkeleton } from '../components/Skeleton.jsx';
 
 const emptyProduct = {
   name: '',
@@ -217,7 +218,7 @@ export default function AdminProducts() {
 
       <section className="surface-card p-5">
         <h2 className="text-xl font-bold text-heading">商品库存</h2>
-        {loading && <p className="mt-4 text-sm text-body">正在加载商品...</p>}
+        {loading && <ProductGridSkeleton count={8} />}
         {!loading && products.length === 0 && <p className="mt-4 text-sm text-body">暂无商品。</p>}
         <div className="mt-4 grid gap-3 md:hidden">
           {products.map((product) => (

@@ -35,7 +35,19 @@ export default function AdminDashboard() {
     );
   }
 
-  if (error) return <p className="rounded-md bg-red-50 p-3 text-sm text-red-700 dark:bg-red-900/20 dark:text-red-400">{error}</p>;
+  if (error) return (
+    <div className="space-y-4">
+      <h1 className="text-2xl font-bold text-heading">管理看板</h1>
+      <p className="rounded-md bg-red-50 p-3 text-sm text-red-700 dark:bg-red-900/20 dark:text-red-400">{error}</p>
+      <button
+        type="button"
+        onClick={() => { setLoading(true); setError(''); api.getAdminStats().then(setStats).catch((err) => setError(err.message)).finally(() => setLoading(false)); }}
+        className="rounded-md bg-brand-600 px-4 py-2 text-sm font-medium text-white"
+      >
+        重试
+      </button>
+    </div>
+  );
   if (!stats) return null;
 
   const cards = [
@@ -104,7 +116,7 @@ export default function AdminDashboard() {
       <section className="surface-card p-5">
         <h2 className="text-lg font-bold text-heading">近期订单</h2>
         <div className="mt-4 overflow-x-auto">
-          <table className="w-full text-left text-sm">
+          <table className="w-full text-left text-sm" aria-label="近期订单">
             <thead className="border-b border-theme text-body">
               <tr>
                 <th scope="col" className="py-2">订单 ID</th>

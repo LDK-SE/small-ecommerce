@@ -28,13 +28,15 @@ const productSchema = new mongoose.Schema(
     imageUrl: {
       type: String,
       required: true,
-      trim: true
+      trim: true,
+      match: /^https?:\/\/.+/i
     },
     stock: {
       type: Number,
       required: true,
       min: 0,
-      default: 0
+      default: 0,
+      index: true
     },
     discount: {
       type: Number,

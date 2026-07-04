@@ -3,6 +3,7 @@ import { api } from '../services/api.js';
 import { formatPrice } from '../utils/formatPrice.js';
 import usePageMeta from '../hooks/usePageMeta.js';
 import { toast } from '../components/Toast.tsx';
+import { OrderListSkeleton } from '../components/Skeleton.jsx';
 
 const orderStatusOptions = [
   ['pending', '待处理'],
@@ -47,8 +48,19 @@ export default function AdminOrders() {
         <h1 className="text-2xl font-bold text-heading">订单管理</h1>
         <p className="mt-1 text-sm text-body">处理订单状态、支付状态和售后状态。</p>
       </div>
-      {loading && <p className="text-body">正在加载订单...</p>}
-      {error && <p className="rounded-md bg-red-50 p-3 text-sm text-red-700 dark:bg-red-900/20 dark:text-red-400">{error}</p>}
+      {loading && <OrderListSkeleton count={3} />}
+      {error && (
+        <div className="space-y-3">
+          <p className="rounded-md bg-red-50 p-3 text-sm text-red-700 dark:bg-red-900/20 dark:text-red-400">{error}</p>
+          <button
+            type="button"
+            onClick={loadOrders}
+            className="rounded-md bg-brand-600 px-4 py-2 text-sm font-medium text-white"
+          >
+            重试
+          </button>
+        </div>
+      )}
       {!loading && !error && orders.length === 0 && <p className="text-body">暂无订单。</p>}
       <div className="space-y-4">
         {orders.map((order) => (

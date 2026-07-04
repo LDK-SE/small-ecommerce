@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const { sanitizeText } = require('../utils/sanitize');
 
 const getMe = async (req, res) => {
   res.json(req.user);
@@ -9,7 +10,7 @@ const updateMe = async (req, res, next) => {
     const { name } = req.body;
     const user = await User.findByIdAndUpdate(
       req.user._id,
-      { name },
+      { name: sanitizeText(name) },
       {
         new: true,
         runValidators: true
@@ -31,7 +32,7 @@ const addAddress = async (req, res, next) => {
     const { receiverName, phone, address, isDefault = false } = req.body;
 
     if (!receiverName || !phone || !address) {
-      return res.status(400).json({ message: 'Receiver name, phone, and address are required' });
+      return res.status(400).json({ message: '收货人、电话和地址均为必填项。' });
     }
 
     const user = await User.findById(req.user._id);
@@ -41,7 +42,12 @@ const addAddress = async (req, res, next) => {
       });
     }
 
-    user.addresses.push({ receiverName, phone, address, isDefault });
+    user.addresses.push({
+      receiverName: sanitizeText(receiverName),
+      phone: sanitizeText(phone),
+      address: sanitizeText(address),
+      isDefault
+    });
     await user.save();
 
     return res.status(201).json(user.addresses);
@@ -56,18 +62,21 @@ const updateAddress = async (req, res, next) => {
     const addressItem = user.addresses.id(req.params.addressId);
 
     if (!addressItem) {
-      return res.status(404).json({ message: 'Address not found' });
+      return res.status(404).json({ message: '地址未找到。' });
     }
 
-    if (req.body.isDefault) {
-      user.addresses.forEach((item) => {
-        item.isDefault = false;
-      });
+    if (req.body.isDefault !== undefined) {
+      if (req.body.isDefault) {
+        user.addresses.forEach((item) => {
+          item.isDefault = false;
+        });
+      }
+      addressItem.isDefault = req.body.isDefault;
     }
 
-    ['receiverName', 'phone', 'address', 'isDefault'].forEach((field) => {
+    ['receiverName', 'phone', 'address'].forEach((field) => {
       if (req.body[field] !== undefined) {
-        addressItem[field] = req.body[field];
+        addressItem[field] = sanitizeText(req.body[field]);
       }
     });
 
@@ -81,7 +90,11 @@ const updateAddress = async (req, res, next) => {
 const deleteAddress = async (req, res, next) => {
   try {
     const user = await User.findById(req.user._id);
-    user.addresses = user.addresses.filter((item) => item._id.toString() !== req.params.addressId);
+    const addressItem = user.addresses.id(req.params.addressId);
+    if (!addressItem) {
+      return res.status(404).json({ message: '地址未找到。' });
+    }
+    addressItem.deleteOne();
     await user.save();
     return res.json(user.addresses);
   } catch (error) {

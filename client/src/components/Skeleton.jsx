@@ -1,5 +1,10 @@
 export function Skeleton({ className = '' }) {
-  return <div className={`animate-pulse rounded-md ${className}`} style={{ background: 'var(--color-surface-soft)', opacity: 0.7 }} />;
+  return (
+    <div
+      className={`animate-pulse rounded-md opacity-70 ${className}`}
+      style={{ background: 'var(--color-surface-soft)' }}
+    />
+  );
 }
 
 export function ProductCardSkeleton() {

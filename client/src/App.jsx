@@ -8,7 +8,7 @@ import BackToTop from './components/BackToTop.jsx';
 import ScrollToTop from './components/ScrollToTop.jsx';
 import { ToastViewport } from './components/Toast.tsx';
 import { useAuth } from './context/AuthContext.jsx';
-import { startAutoFlush, stopAutoFlush } from './services/analytics.js';
+import { init as initAnalytics, stopAutoFlush } from './services/analytics.js';
 
 const Home = lazy(() => import('./pages/Home.jsx'));
 const Products = lazy(() => import('./pages/Products.jsx'));
@@ -50,7 +50,7 @@ function AdminRoute({ children }) {
 
 export default function App() {
   useEffect(() => {
-    startAutoFlush();
+    initAnalytics();
     return () => stopAutoFlush();
   }, []);
 

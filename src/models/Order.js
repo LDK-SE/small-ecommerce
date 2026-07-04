@@ -44,7 +44,7 @@ const orderSchema = new mongoose.Schema(
     totalPrice: {
       type: Number,
       required: true,
-      min: 0
+      min: 0.01
     },
     shippingAddress: {
       receiverName: {
@@ -66,12 +66,14 @@ const orderSchema = new mongoose.Schema(
     status: {
       type: String,
       enum: ['pending', 'completed', 'canceled'],
-      default: 'pending'
+      default: 'pending',
+      index: true
     },
     paymentStatus: {
       type: String,
       enum: ['unpaid', 'paid', 'refunded'],
-      default: 'unpaid'
+      default: 'unpaid',
+      index: true
     },
     paymentMethod: {
       type: String,

@@ -90,7 +90,7 @@ export default function ProductGallerySku({ product, onAddToCart }: ProductGalle
               className={`h-20 w-20 shrink-0 overflow-hidden rounded-md border ${
                 activeImage === image ? 'border-brand-600' : 'border-theme'
               }`}
-              aria-label="Switch product image"
+              aria-label="切换商品图片"
             >
               <img src={image} alt="" className="h-full w-full object-cover" loading="lazy" />
             </button>
@@ -110,7 +110,7 @@ export default function ProductGallerySku({ product, onAddToCart }: ProductGalle
           <div
             className="pointer-events-none absolute inset-0 hidden bg-no-repeat opacity-0 transition-opacity duration-200 group-hover:opacity-100 lg:block"
             style={{
-              backgroundImage: `url(${activeImage})`,
+              backgroundImage: `url(${encodeURI(activeImage)})`,
               backgroundSize: '200%',
               backgroundPosition: `${zoomPos.x}% ${zoomPos.y}%`
             }}

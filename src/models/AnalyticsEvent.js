@@ -28,4 +28,7 @@ const analyticsEventSchema = new mongoose.Schema(
   }
 );
 
+// Auto-clean events older than 90 days
+analyticsEventSchema.index({ receivedAt: 1 }, { expireAfterSeconds: 90 * 24 * 60 * 60 });
+
 module.exports = mongoose.model('AnalyticsEvent', analyticsEventSchema);

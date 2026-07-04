@@ -1,11 +1,20 @@
 const errorHandler = (err, req, res, next) => {
   let statusCode = res.statusCode >= 400 ? res.statusCode : 500;
 
-  if (err.name === 'ValidationError' || err.name === 'CastError') {
+  if (err.name === 'ValidationError') {
     statusCode = 400;
   }
 
-  console.error(`[${new Date().toISOString()}] ${req.method} ${req.originalUrl}`, err.stack || err);
+  if (err.name === 'CastError') {
+    statusCode = 400;
+    err.message = '无效的资源标识符。';
+  }
+
+  if (process.env.NODE_ENV === 'production') {
+    console.error(`[${new Date().toISOString()}] ${req.method} ${req.originalUrl} ${err.message}`);
+  } else {
+    console.error(`[${new Date().toISOString()}] ${req.method} ${req.originalUrl}`, err.stack || err);
+  }
 
   const isOperational =
     statusCode === 400 ||

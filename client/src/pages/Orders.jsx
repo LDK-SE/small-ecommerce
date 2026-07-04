@@ -70,7 +70,18 @@ export default function Orders() {
       </div>
 
       {loading && <OrderListSkeleton count={3} />}
-      {error && <p className="rounded-md bg-red-50 p-3 text-sm text-red-700 dark:bg-red-900/20 dark:text-red-400">{error}</p>}
+      {error && (
+        <div className="space-y-3">
+          <p className="rounded-md bg-red-50 p-3 text-sm text-red-700 dark:bg-red-900/20 dark:text-red-400">{error}</p>
+          <button
+            type="button"
+            onClick={loadOrders}
+            className="rounded-md bg-brand-600 px-4 py-2 text-sm font-medium text-white"
+          >
+            重试
+          </button>
+        </div>
+      )}
 
       {!loading && !error && orders.length === 0 && (
         <p className="surface-card p-8 text-center text-body">暂无订单。</p>

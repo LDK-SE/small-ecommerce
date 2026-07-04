@@ -5,17 +5,20 @@ const addressSchema = new mongoose.Schema({
   receiverName: {
     type: String,
     required: true,
-    trim: true
+    trim: true,
+    maxlength: 100
   },
   phone: {
     type: String,
     required: true,
-    trim: true
+    trim: true,
+    maxlength: 20
   },
   address: {
     type: String,
     required: true,
-    trim: true
+    trim: true,
+    maxlength: 500
   },
   isDefault: {
     type: Boolean,
@@ -29,7 +32,8 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
       trim: true,
-      minlength: 2
+      minlength: 2,
+      maxlength: 50
     },
     email: {
       type: String,
@@ -42,7 +46,7 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       required: true,
-      minlength: 6,
+      minlength: 8,
       select: false
     },
     isAdmin: {
@@ -60,13 +64,12 @@ const userSchema = new mongoose.Schema(
   }
 );
 
-// Hash only when the password is new or changed.
 userSchema.pre('save', async function hashPassword(next) {
   if (!this.isModified('password')) {
     return next();
   }
 
-  const salt = await bcrypt.genSalt(10);
+  const salt = await bcrypt.genSalt(12);
   this.password = await bcrypt.hash(this.password, salt);
   return next();
 });

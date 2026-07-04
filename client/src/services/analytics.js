@@ -14,6 +14,9 @@ function getQueue() {
 }
 
 function setQueue(queue) {
+  if (queue.length > MAX_QUEUE_SIZE) {
+    console.warn('[analytics] Queue exceeded limit, oldest events dropped.');
+  }
   localStorage.setItem(QUEUE_KEY, JSON.stringify(queue.slice(-MAX_QUEUE_SIZE)));
 }
 
@@ -64,11 +67,20 @@ export function stopAutoFlush() {
 }
 
 // Flush on page unload
-if (typeof window !== 'undefined') {
+let beforeUnloadBound = false;
+
+function bindUnload() {
+  if (beforeUnloadBound || typeof window === 'undefined') return;
+  beforeUnloadBound = true;
   window.addEventListener('beforeunload', () => {
     const queue = getQueue();
     if (queue.length === 0) return;
     navigator.sendBeacon(`${API_BASE_URL}/analytics/events`, JSON.stringify({ events: queue }));
     localStorage.removeItem(QUEUE_KEY);
   });
+}
+
+export function init() {
+  bindUnload();
+  startAutoFlush();
 }

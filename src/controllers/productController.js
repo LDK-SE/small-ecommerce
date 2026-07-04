@@ -1,5 +1,6 @@
 const Product = require('../models/Product');
 const Review = require('../models/Review');
+const { sanitizeText } = require('../utils/sanitize');
 
 const escapeRegExp = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
@@ -94,7 +95,7 @@ const getProductById = async (req, res, next) => {
     ]);
 
     if (!product) {
-      return res.status(404).json({ message: 'Product not found' });
+      return res.status(404).json({ message: '商品未找到。' });
     }
 
     const averageRating =
@@ -118,12 +119,12 @@ const createProductReview = async (req, res, next) => {
     const { rating, comment } = req.body;
 
     if (!rating || !comment) {
-      return res.status(400).json({ message: 'Rating and comment are required' });
+      return res.status(400).json({ message: '评分和评价内容均为必填项。' });
     }
 
     const product = await Product.findById(req.params.id);
     if (!product) {
-      return res.status(404).json({ message: 'Product not found' });
+      return res.status(404).json({ message: '商品未找到。' });
     }
 
     const review = await Review.findOneAndUpdate(
@@ -133,7 +134,7 @@ const createProductReview = async (req, res, next) => {
       },
       {
         rating,
-        comment
+        comment: sanitizeText(comment)
       },
       {
         new: true,
@@ -151,11 +152,13 @@ const createProductReview = async (req, res, next) => {
 
 const productFields = ['name', 'description', 'price', 'category', 'imageUrl', 'stock', 'discount', 'tags'];
 
+const stringFields = ['name', 'description', 'category', 'imageUrl'];
+
 const pickProductFields = (body) => {
   const data = {};
   for (const field of productFields) {
     if (body[field] !== undefined) {
-      data[field] = body[field];
+      data[field] = stringFields.includes(field) ? sanitizeText(body[field]) : body[field];
     }
   }
   return data;
@@ -178,7 +181,7 @@ const updateProduct = async (req, res, next) => {
     });
 
     if (!product) {
-      return res.status(404).json({ message: 'Product not found' });
+      return res.status(404).json({ message: '商品未找到。' });
     }
 
     return res.json(product);
@@ -192,12 +195,12 @@ const deleteProduct = async (req, res, next) => {
     const product = await Product.findByIdAndDelete(req.params.id);
 
     if (!product) {
-      return res.status(404).json({ message: 'Product not found' });
+      return res.status(404).json({ message: '商品未找到。' });
     }
 
     await Review.deleteMany({ productId: req.params.id });
 
-    return res.json({ message: 'Product deleted' });
+    return res.json({ message: '商品已删除。' });
   } catch (error) {
     return next(error);
   }

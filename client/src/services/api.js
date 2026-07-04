@@ -1,7 +1,7 @@
 import { resolveApiBaseUrl } from './apiBase.js';
 
 const API_BASE_URL = resolveApiBaseUrl(import.meta.env.VITE_API_BASE_URL);
-const REQUEST_TIMEOUT_MS = 10000;
+const REQUEST_TIMEOUT_MS = Number(import.meta.env.VITE_REQUEST_TIMEOUT_MS) || 10000;
 
 async function request(path, options = {}) {
   const token = localStorage.getItem('token');

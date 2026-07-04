@@ -10,7 +10,7 @@ import { trackEvent } from '../services/analytics.js';
 import { formatPrice } from '../utils/formatPrice.js';
 
 const steps = ['购物车', '收货信息', '确认下单'];
-const FREE_SHIPPING_THRESHOLD = 200;
+const FREE_SHIPPING_THRESHOLD = Number(import.meta.env.VITE_FREE_SHIPPING_THRESHOLD) || 200;
 
 export default function Cart() {
   usePageMeta(
@@ -165,6 +165,7 @@ export default function Cart() {
                 {addresses.length > 0 && (
                   <select
                     className="mt-4 w-full rounded-md border border-theme bg-surface-raised px-3 py-2 text-sm text-body"
+                    value=""
                     onChange={(event) => {
                       const selected = addresses.find((item) => item._id === event.target.value);
                       if (selected) {

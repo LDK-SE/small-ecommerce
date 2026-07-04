@@ -4,7 +4,7 @@ const generateToken = (user) => {
   return jwt.sign(
     {
       id: user._id,
-      isAdmin: user.isAdmin
+      iat: Math.floor(Date.now() / 1000)
     },
     process.env.JWT_SECRET,
     {

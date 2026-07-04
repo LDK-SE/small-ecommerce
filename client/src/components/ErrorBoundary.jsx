@@ -18,7 +18,7 @@ export default class ErrorBoundary extends Component {
   render() {
     if (this.state.hasError) {
       return (
-        <main className="mx-auto flex min-h-[60vh] max-w-2xl flex-col items-center justify-center px-4 text-center">
+        <main role="alert" className="mx-auto flex min-h-[60vh] max-w-2xl flex-col items-center justify-center px-4 text-center">
           <h1 className="text-3xl font-bold text-heading">页面出了点问题</h1>
           <p className="mt-3 text-body">页面加载失败，您可以返回首页或刷新重试。</p>
           <div className="mt-6 flex gap-3">

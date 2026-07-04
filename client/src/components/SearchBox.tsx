@@ -154,6 +154,8 @@ export default function SearchBox({ value, products, categories, onChange, onSea
               type="button"
               onClick={() => {
                 localStorage.removeItem('searchHistory');
+                onChange('');
+                onSearch('');
                 setOpen(false);
               }}
               className="mt-1 min-h-10 w-full rounded-md px-3 text-left text-xs font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"

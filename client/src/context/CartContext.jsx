@@ -1,5 +1,6 @@
-import { createContext, useContext, useEffect, useMemo, useReducer } from 'react';
+import { createContext, useContext, useEffect, useMemo, useReducer, useRef } from 'react';
 import { cartReducer, getCartTotals } from './cartReducer.js';
+import { useAuth } from './AuthContext.jsx';
 
 const CartContext = createContext(null);
 
@@ -19,10 +20,25 @@ function loadCart() {
 
 export function CartProvider({ children }) {
   const [state, dispatch] = useReducer(cartReducer, initialState, loadCart);
+  const { user } = useAuth();
+  const prevUser = useRef(user);
+  const persistTimer = useRef(null);
 
   useEffect(() => {
-    // Persist cart changes across refreshes without requiring a backend cart model.
-    localStorage.setItem('cart', JSON.stringify(state));
+    if (prevUser.current && !user) {
+      dispatch({ type: 'CLEAR_CART' });
+    }
+    prevUser.current = user;
+  }, [user]);
+
+  useEffect(() => {
+    if (persistTimer.current) clearTimeout(persistTimer.current);
+    persistTimer.current = setTimeout(() => {
+      localStorage.setItem('cart', JSON.stringify(state));
+    }, 300);
+    return () => {
+      if (persistTimer.current) clearTimeout(persistTimer.current);
+    };
   }, [state]);
 
   const totals = getCartTotals(state.items);
