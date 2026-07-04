@@ -1,0 +1,1 @@
+function i(r){const t=Number(r),n=Number.isFinite(t)?t:0;return new Intl.NumberFormat("zh-CN",{style:"currency",currency:"CNY",minimumFractionDigits:2,maximumFractionDigits:2}).format(n)}export{i as f};
