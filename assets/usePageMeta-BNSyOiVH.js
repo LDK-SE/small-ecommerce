@@ -1,0 +1,1 @@
+import{r as n}from"./index-Bs4hLcRI.js";function o(t,a){n.useEffect(()=>{document.title=t;let e=document.querySelector('meta[name="description"]');e||(e=document.createElement("meta"),e.setAttribute("name","description"),document.head.appendChild(e)),e.setAttribute("content",a)},[a,t])}export{o as u};
