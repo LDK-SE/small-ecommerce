@@ -12,7 +12,7 @@ if ('serviceWorker' in navigator && import.meta.env.PROD) {
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <BrowserRouter>
+    <BrowserRouter basename="/small-ecommerce">
       <AuthProvider>
         <CartProvider>
           <App />

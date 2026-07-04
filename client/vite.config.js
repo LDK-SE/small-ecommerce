@@ -2,6 +2,7 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
 export default defineConfig({
+  base: '/small-ecommerce/',
   plugins: [react()],
   build: {
     outDir: 'build',
